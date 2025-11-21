@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Schedule | Now</title>
+
+    <!-- Google Fonts: Outfit for a modern, clean look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Day.js for time manipulation -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/isBetween.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/customParseFormat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="universe-canvas"></canvas>
+    <div class="stars">
+        <div class="star" style="top: 10%; left: 20%; width: 2px; height: 2px; --duration: 3s; --opacity: 0.8;"></div>
+        <div class="star" style="top: 30%; left: 80%; width: 3px; height: 3px; --duration: 4s; --opacity: 0.6;"></div>
+        <div class="star" style="top: 70%; left: 40%; width: 2px; height: 2px; --duration: 2.5s; --opacity: 0.9;"></div>
+        <div class="star" style="top: 50%; left: 10%; width: 1px; height: 1px; --duration: 5s; --opacity: 0.5;"></div>
+        <div class="star" style="top: 80%; left: 90%; width: 2px; height: 2px; --duration: 3.5s; --opacity: 0.7;"></div>
+    </div>
+
+    <main class="container">
+        <header class="header">
+            <div class="live-indicator">
+                <span class="dot"></span>
+                <span id="current-day-time">Loading...</span>
+            </div>
+            <h1>What am I doing?</h1>
+        </header>
+
+        <div class="card main-status-card" id="status-card">
+            <div class="status-icon" id="status-icon">🤔</div>
+            <h2 class="status-title" id="status-title">Checking schedule...</h2>
+            <p class="status-desc" id="status-desc">Just a moment.</p>
+            <div class="progress-container" id="progress-container" style="display: none;">
+                <div class="progress-bar" id="progress-bar"></div>
+                <span class="time-remaining" id="time-remaining"></span>
+            </div>
+        </div>
+
+        <div class="formal-message" id="formal-message" style="display: none;">
+            <div class="formal-icon">⚠️</div>
+            <p class="formal-text" id="formal-text">
+                <!-- Dynamic content -->
+            </p>
+        </div>
+
+        <div class="card next-up-card">
+            <h3>Next Up</h3>
+            <div class="next-item" id="next-item">
+                <span class="next-time">--:--</span>
+                <span class="next-activity">Loading...</span>
+            </div>
+        </div>
+
+        <div class="card weekly-schedule">
+            <h3>Weekly Schedule</h3>
+
+            <div class="legend">
+                <span class="legend-item legend-oh">OH - Office Hours</span>
+                <span class="legend-item legend-cnh">CnH - Counseling Hours</span>
+                <span class="legend-item legend-class">Class - Class Hours</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="schedule-grid">
+                    <thead>
+                        <tr>
+                            <th>DAY</th>
+                            <th>8:30AM-9:50AM</th>
+                            <th>9:51AM-11:10AM</th>
+                            <th>11:11AM-12:30PM</th>
+                            <th>12:31PM-1:50PM</th>
+                            <th>1:51PM-3:10PM</th>
+                            <th>3:11PM-4:30PM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="day-col">SAT</td>
+                            <td>CSE 2216 (E)</td>
+                            <td>CSE 2216 (E)</td>
+                            <td class="cnh">CnH</td>
+                            <td class="cnh">CnH</td>
+                            <td class="cnh">CnH</td>
+                            <td class="cnh">CnH</td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">SUN</td>
+                            <td>CSE 1112 (M)</td>
+                            <td>CSE 1112 (M)</td>
+                            <td class="cnh">CnH</td>
+                            <td class="oh">OH</td>
+                            <td class="cnh">CnH</td>
+                            <td>CSE 1111 (U)</td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">MON</td>
+                            <td class="oh">OH</td>
+                            <td class="oh">OH</td>
+                            <td class="oh">OH</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">TUE</td>
+                            <td class="cnh">CnH</td>
+                            <td class="cnh">CnH</td>
+                            <td>CSE 1110 (G)</td>
+                            <td>CSE 1110 (G)</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="day-col">WED</td>
+                            <td>CSE 1112 (Q)</td>
+                            <td>CSE 1112 (Q)</td>
+                            <td class="cnh">CnH</td>
+                            <td class="oh">OH</td>
+                            <td class="cnh">CnH</td>
+                            <td>CSE 1111 (U)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Sahid Hossain Mustakim</p>
+            <div class="contact-links">
+                <a href="mailto:mustakim.ptfaculty@cse.uiu.ac.bd">Email Me</a>
+            </div>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
