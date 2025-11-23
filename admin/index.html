@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Schedule Manager</title>
+
+    <!-- Google Fonts: Outfit for a modern, clean look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="universe-canvas"></canvas>
+    <div class="stars">
+        <div class="star" style="top: 10%; left: 20%; width: 2px; height: 2px; --duration: 3s; --opacity: 0.8;"></div>
+        <div class="star" style="top: 30%; left: 80%; width: 3px; height: 3px; --duration: 4s; --opacity: 0.6;"></div>
+        <div class="star" style="top: 70%; left: 40%; width: 2px; height: 2px; --duration: 2.5s; --opacity: 0.9;"></div>
+        <div class="star" style="top: 50%; left: 10%; width: 1px; height: 1px; --duration: 5s; --opacity: 0.5;"></div>
+        <div class="star" style="top: 80%; left: 90%; width: 2px; height: 2px; --duration: 3.5s; --opacity: 0.7;"></div>
+    </div>
+
+    <!-- Login Screen -->
+    <div class="login-container" id="login-screen">
+        <div class="login-card">
+            <h1>🔐 Admin Panel</h1>
+            <p class="login-subtitle">Enter your password to continue</p>
+            <form id="login-form">
+                <input type="password" id="password-input" placeholder="Enter password" required
+                    autocomplete="current-password">
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p class="login-hint" id="login-hint">First time? Set your password above.</p>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <main class="admin-container" id="admin-panel" style="display: none;">
+        <header class="admin-header">
+            <div>
+                <h1>⚡ Admin Control Panel</h1>
+                <p class="admin-subtitle">Manage your schedule status</p>
+            </div>
+            <button class="btn-logout" id="logout-btn">Logout</button>
+        </header>
+
+        <!-- Status Overview Card -->
+        <div class="card status-overview">
+            <div class="card-header">
+                <h2>📊 Current Status</h2>
+                <div class="status-badge" id="status-badge">
+                    <span class="status-dot"></span>
+                    <span id="status-badge-text">Normal Schedule</span>
+                </div>
+            </div>
+            <div class="status-preview" id="status-preview">
+                <div class="preview-label">Public View:</div>
+                <div class="preview-box" id="preview-content">
+                    Your schedule is running normally based on your weekly timetable.
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Control Card -->
+        <div class="card status-control">
+            <h2>🎛️ Status Override</h2>
+            <p class="card-description">Enable to display a custom message on your public schedule page</p>
+
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="status-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-label">
+                    <span class="toggle-title">Status Override</span>
+                    <span class="toggle-desc" id="toggle-desc">Disabled - showing normal schedule</span>
+                </div>
+            </div>
+
+            <!-- Custom Message Section (shown when toggle is ON) -->
+            <div class="custom-message-section" id="custom-message-section" style="display: none;">
+                <label for="custom-message">Custom Message:</label>
+                <textarea id="custom-message" rows="3" placeholder="Enter your custom status message..."></textarea>
+
+                <div class="preset-messages">
+                    <p class="preset-label">Quick Presets:</p>
+                    <div class="preset-buttons">
+                        <button class="btn-preset" data-message="I am in a meeting, you can wait outside my room">
+                            💼 In Meeting
+                        </button>
+                        <button class="btn-preset"
+                            data-message="Counseling hours are paused temporarily. Please check back later.">
+                            ⏸️ Paused
+                        </button>
+                        <button class="btn-preset"
+                            data-message="Available for urgent matters only. Please knock if important.">
+                            🚨 Urgent Only
+                        </button>
+                        <button class="btn-preset"
+                            data-message="Currently unavailable. Normal counseling hours will resume soon.">
+                            ❌ Unavailable
+                        </button>
+                        <button class="btn-preset"
+                            data-message="Office hours are running 30 minutes late today. Thanks for your patience!">
+                            ⏰ Running Late
+                        </button>
+                        <button class="btn-preset" data-message="Taking a short break. Back in 15 minutes.">
+                            ☕ On Break
+                        </button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-primary" id="save-btn">💾 Save & Activate</button>
+                    <button class="btn-secondary" id="clear-btn">🗑️ Clear Message</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card quick-links">
+            <h2>🔗 Quick Links</h2>
+            <div class="link-buttons">
+                <a href="../index.html" target="_blank" class="btn-link">
+                    <span class="link-icon">👁️</span>
+                    <span>View Public Schedule</span>
+                </a>
+                <button class="btn-link" id="change-password-btn">
+                    <span class="link-icon">🔑</span>
+                    <span>Change Password</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card help-section">
+            <h3>💡 How to Use</h3>
+            <ul>
+                <li><strong>Toggle ON:</strong> Enable status override to display your custom message</li>
+                <li><strong>Custom Message:</strong> Write any message you want to show on your public schedule</li>
+                <li><strong>Presets:</strong> Click any preset button to quickly fill in common messages</li>
+                <li><strong>Save:</strong> Click "Save & Activate" to publish your message</li>
+                <li><strong>Clear:</strong> Remove the custom message and return to normal schedule</li>
+            </ul>
+        </div>
+
+        <footer class="admin-footer">
+            <p>Admin Panel | Sahid Hossain Mustakim</p>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
