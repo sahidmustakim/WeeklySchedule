@@ -25,6 +25,9 @@ const presetButtons = document.querySelectorAll('.btn-preset');
 // Password Management
 // ================================
 
+// Fixed password: "messi2022"
+const ADMIN_PASSWORD = "messi2022";
+
 function hashPassword(password) {
     // Simple hash for demo - in production, use proper server-side authentication
     let hash = 0;
@@ -36,18 +39,8 @@ function hashPassword(password) {
     return hash.toString();
 }
 
-function isPasswordSet() {
-    return localStorage.getItem('adminPasswordHash') !== null;
-}
-
-function setPassword(password) {
-    const hash = hashPassword(password);
-    localStorage.setItem('adminPasswordHash', hash);
-}
-
 function verifyPassword(password) {
-    const hash = hashPassword(password);
-    return hash === localStorage.getItem('adminPasswordHash');
+    return password === ADMIN_PASSWORD;
 }
 
 // ================================
@@ -75,29 +68,19 @@ loginForm.addEventListener('submit', (e) => {
         return;
     }
 
-    if (!isPasswordSet()) {
-        // First time setup
-        setPassword(password);
-        loginHint.textContent = 'Password set successfully! Welcome!';
-        loginHint.style.color = '#34d399';
-        setTimeout(() => {
-            showAdminPanel();
-        }, 1000);
+    // Verify password
+    if (verifyPassword(password)) {
+        showAdminPanel();
     } else {
-        // Verify password
-        if (verifyPassword(password)) {
-            showAdminPanel();
-        } else {
-            passwordInput.value = '';
-            passwordInput.style.borderColor = '#f87171';
-            loginHint.textContent = 'Incorrect password. Please try again.';
-            loginHint.style.color = '#f87171';
-            setTimeout(() => {
-                passwordInput.style.borderColor = '';
-                loginHint.textContent = 'Enter your password to continue.';
-                loginHint.style.color = '';
-            }, 2000);
-        }
+        passwordInput.value = '';
+        passwordInput.style.borderColor = '#f87171';
+        loginHint.textContent = 'Incorrect password. Please try again.';
+        loginHint.style.color = '#f87171';
+        setTimeout(() => {
+            passwordInput.style.borderColor = '';
+            loginHint.textContent = 'Enter your password to continue.';
+            loginHint.style.color = '';
+        }, 2000);
     }
 });
 
@@ -105,15 +88,7 @@ logoutBtn.addEventListener('click', () => {
     showLoginScreen();
 });
 
-changePasswordBtn.addEventListener('click', () => {
-    const newPassword = prompt('Enter new password:');
-    if (newPassword && newPassword.length >= 4) {
-        setPassword(newPassword);
-        alert('Password changed successfully!');
-    } else if (newPassword !== null) {
-        alert('Password must be at least 4 characters long.');
-    }
-});
+// Change password button removed - using fixed password
 
 // ================================
 // Status Management
@@ -294,12 +269,8 @@ animateStars();
 // Initialize
 // ================================
 
-// Check if already logged in (session)
-if (isPasswordSet()) {
-    loginHint.textContent = 'Enter your password to continue.';
-} else {
-    loginHint.textContent = 'First time? Set your password above.';
-}
+// Set login hint
+loginHint.textContent = 'Enter your password to continue.';
 
 // Start on login screen
 showLoginScreen();
