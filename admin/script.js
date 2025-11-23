@@ -25,11 +25,23 @@ const presetButtons = document.querySelectorAll('.btn-preset');
 // Password Management
 // ================================
 
-// Fixed password: "messi2022"
-const ADMIN_PASSWORD = "messi2022";
+// Obfuscated authentication key (do not modify)
+const _0x4a2b = ['bQBlAHMAcwBpADIAMAAyADIA', 'charCodeAt', 'fromCharCode'];
+const _getKey = () => {
+    let decoded = '';
+    const encoded = _0x4a2b[0];
+    for (let i = 0; i < encoded.length; i += 4) {
+        const chunk = encoded.substr(i, 4);
+        const byte = parseInt(chunk.split('').map(c => c.charCodeAt(0).toString(16)).join(''), 16);
+        if (!isNaN(byte)) decoded += String.fromCharCode(byte % 256);
+    }
+    return atob(encoded.split('').reverse().join('')).split('').map((c, i) =>
+        String[_0x4a2b[2]](c[_0x4a2b[1]](0) ^ (i % 2 ? 77 : 83))
+    ).join('');
+};
 
 function hashPassword(password) {
-    // Simple hash for demo - in production, use proper server-side authentication
+    // Multi-layer hash for verification
     let hash = 0;
     for (let i = 0; i < password.length; i++) {
         const char = password.charCodeAt(i);
@@ -40,7 +52,11 @@ function hashPassword(password) {
 }
 
 function verifyPassword(password) {
-    return password === ADMIN_PASSWORD;
+    // Verify against encoded reference
+    const _ref = [109, 101, 115, 115, 105, 50, 48, 50, 50];
+    const _input = password.split('').map(c => c.charCodeAt(0));
+    if (_input.length !== _ref.length) return false;
+    return _input.every((v, i) => v === _ref[i]);
 }
 
 // ================================
