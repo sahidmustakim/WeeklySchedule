@@ -3,46 +3,77 @@ dayjs.extend(window.dayjs_plugin_customParseFormat);
 
 // --- CONFIGURATION ---
 
-// Schedule Data
+// Default Schedule Data (fallback if localStorage is empty)
 // Days: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
 // Types: 'class', 'cnh' (Counseling Hour), 'oh' (Office Hour)
 
-const schedule = [
-    // SATURDAY (6)
-    { day: 6, start: '08:30', end: '09:50', title: 'CSE 2216 (E)', type: 'class', room: '427' },
-    { day: 6, start: '09:51', end: '11:10', title: 'CSE 2216 (E)', type: 'class', room: '427' },
-    { day: 6, start: '11:11', end: '12:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 6, start: '12:31', end: '13:50', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 6, start: '13:51', end: '15:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 6, start: '15:11', end: '16:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+function getDefaultSchedule() {
+    return [
+        // SATURDAY (6)
+        { id: 'sat-1', day: 6, start: '08:30', end: '09:50', title: 'CSE 2216 (E)', type: 'class', room: '427' },
+        { id: 'sat-2', day: 6, start: '09:51', end: '11:10', title: 'CSE 2216 (E)', type: 'class', room: '427' },
+        { id: 'sat-3', day: 6, start: '11:11', end: '12:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'sat-4', day: 6, start: '12:31', end: '13:50', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'sat-5', day: 6, start: '13:51', end: '15:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'sat-6', day: 6, start: '15:11', end: '16:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
 
-    // SUNDAY (0)
-    { day: 0, start: '08:30', end: '09:50', title: 'CSE 1112 (M)', type: 'class', room: '423' },
-    { day: 0, start: '09:51', end: '11:10', title: 'CSE 1112 (M)', type: 'class', room: '423' },
-    { day: 0, start: '11:11', end: '12:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 0, start: '12:31', end: '13:50', title: 'Office Hour', type: 'oh', room: '935-A' },
-    { day: 0, start: '13:51', end: '15:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 0, start: '15:11', end: '16:30', title: 'CSE 1111 (U)', type: 'class', room: '308' },
+        // SUNDAY (0)
+        { id: 'sun-1', day: 0, start: '08:30', end: '09:50', title: 'CSE 1112 (M)', type: 'class', room: '423' },
+        { id: 'sun-2', day: 0, start: '09:51', end: '11:10', title: 'CSE 1112 (M)', type: 'class', room: '423' },
+        { id: 'sun-3', day: 0, start: '11:11', end: '12:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'sun-4', day: 0, start: '12:31', end: '13:50', title: 'Office Hour', type: 'oh', room: '935-A' },
+        { id: 'sun-5', day: 0, start: '13:51', end: '15:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'sun-6', day: 0, start: '15:11', end: '16:30', title: 'CSE 1111 (U)', type: 'class', room: '308' },
 
-    // MONDAY (1)
-    { day: 1, start: '08:30', end: '09:50', title: 'Office Hour', type: 'oh', room: '935-A' },
-    { day: 1, start: '09:51', end: '11:10', title: 'Office Hour', type: 'oh', room: '935-A' },
-    { day: 1, start: '11:11', end: '12:30', title: 'Office Hour', type: 'oh', room: '935-A' },
+        // MONDAY (1)
+        { id: 'mon-1', day: 1, start: '08:30', end: '09:50', title: 'Office Hour', type: 'oh', room: '935-A' },
+        { id: 'mon-2', day: 1, start: '09:51', end: '11:10', title: 'Office Hour', type: 'oh', room: '935-A' },
+        { id: 'mon-3', day: 1, start: '11:11', end: '12:30', title: 'Office Hour', type: 'oh', room: '935-A' },
 
-    // TUESDAY (2)
-    { day: 2, start: '08:30', end: '09:50', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 2, start: '09:51', end: '11:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 2, start: '11:11', end: '12:30', title: 'CSE 1110 (G)', type: 'class', room: '326' },
-    { day: 2, start: '12:31', end: '13:50', title: 'CSE 1110 (G)', type: 'class', room: '326' },
+        // TUESDAY (2)
+        { id: 'tue-1', day: 2, start: '08:30', end: '09:50', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'tue-2', day: 2, start: '09:51', end: '11:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'tue-3', day: 2, start: '11:11', end: '12:30', title: 'CSE 1110 (G)', type: 'class', room: '326' },
+        { id: 'tue-4', day: 2, start: '12:31', end: '13:50', title: 'CSE 1110 (G)', type: 'class', room: '326' },
 
-    // WEDNESDAY (3)
-    { day: 3, start: '08:30', end: '09:50', title: 'CSE 1112 (Q)', type: 'class', room: '422' },
-    { day: 3, start: '09:51', end: '11:10', title: 'CSE 1112 (Q)', type: 'class', room: '422' },
-    { day: 3, start: '11:11', end: '12:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 3, start: '12:31', end: '13:50', title: 'Office Hour', type: 'oh', room: '935-A' },
-    { day: 3, start: '13:51', end: '15:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
-    { day: 3, start: '15:11', end: '16:30', title: 'CSE 1111 (U)', type: 'class', room: '308' },
-];
+        // WEDNESDAY (3)
+        { id: 'wed-1', day: 3, start: '08:30', end: '09:50', title: 'CSE 1112 (Q)', type: 'class', room: '422' },
+        { id: 'wed-2', day: 3, start: '09:51', end: '11:10', title: 'CSE 1112 (Q)', type: 'class', room: '422' },
+        { id: 'wed-3', day: 3, start: '11:11', end: '12:30', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'wed-4', day: 3, start: '12:31', end: '13:50', title: 'Office Hour', type: 'oh', room: '935-A' },
+        { id: 'wed-5', day: 3, start: '13:51', end: '15:10', title: 'Counseling Hour', type: 'cnh', room: '935-A' },
+        { id: 'wed-6', day: 3, start: '15:11', end: '16:30', title: 'CSE 1111 (U)', type: 'class', room: '308' },
+    ];
+}
+
+// Load schedule from localStorage or use default
+function loadSchedule() {
+    const stored = localStorage.getItem('scheduleData');
+    if (stored) {
+        try {
+            const data = JSON.parse(stored);
+            console.log('✅ Loaded schedule from localStorage:', data.entries.length, 'entries');
+            return data.entries || getDefaultSchedule();
+        } catch (e) {
+            console.warn('⚠️ Failed to parse schedule from localStorage, using default');
+            return getDefaultSchedule();
+        }
+    }
+
+    // First time - initialize localStorage with default schedule
+    console.log('📦 Initializing schedule in localStorage');
+    const defaultSchedule = getDefaultSchedule();
+    const scheduleData = {
+        version: 1,
+        lastUpdated: Date.now(),
+        entries: defaultSchedule
+    };
+    localStorage.setItem('scheduleData', JSON.stringify(scheduleData));
+    return defaultSchedule;
+}
+
+// Dynamic schedule (loaded from localStorage)
+let schedule = loadSchedule();
 
 // --- DOM ELEMENTS ---
 const currentDayTimeEl = document.getElementById('current-day-time');
@@ -408,10 +439,17 @@ setInterval(updateTime, 1000); // Update every second for real-time admin status
 
 // Listen for storage changes from admin panel (real-time sync across tabs)
 window.addEventListener('storage', (e) => {
-    // Only update if adminStatus changed
+    // Admin status changed
     if (e.key === 'adminStatus') {
         console.log('Admin status changed by admin panel, updating display...');
         updateTime();
+    }
+
+    // Schedule data changed
+    if (e.key === 'scheduleData') {
+        console.log('📅 Schedule updated by admin panel, reloading...');
+        schedule = loadSchedule();
+        updateTime(); // Refresh display with new schedule
     }
 });
 
