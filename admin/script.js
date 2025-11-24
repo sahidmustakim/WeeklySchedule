@@ -125,6 +125,8 @@ function getAdminStatus() {
 function saveAdminStatus(status) {
     status.timestamp = Date.now();
     localStorage.setItem('adminStatus', JSON.stringify(status));
+    console.log('Admin status saved:', status);
+    console.log('localStorage updated - main page should detect this change');
     updateUI();
 }
 

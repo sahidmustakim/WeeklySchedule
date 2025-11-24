@@ -58,10 +58,84 @@ const formalTextEl = document.getElementById('formal-text');
 
 // --- LOGIC ---
 
+// Check for admin status override
+function checkAdminStatus() {
+    const statusJson = localStorage.getItem('adminStatus');
+    if (statusJson) {
+        try {
+            const status = JSON.parse(statusJson);
+            return status;
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
 function updateTime() {
     const now = dayjs();
     currentDayTimeEl.textContent = now.format('dddd, h:mm A');
+
+    // Check for admin override first
+    const adminStatus = checkAdminStatus();
+    if (adminStatus && adminStatus.enabled && adminStatus.message) {
+        displayAdminStatus(adminStatus);
+        return; // Don't check normal schedule
+    }
+
     checkSchedule(now);
+}
+
+function displayAdminStatus(status) {
+    // Update status card with admin message
+    statusTitleEl.textContent = "⚠️ Special Notice";
+    statusDescEl.textContent = status.message;
+    statusIconEl.textContent = "📢";
+    progressContainerEl.style.display = 'none';
+    document.documentElement.style.setProperty('--accent-3', '#fbbf24'); // Yellow
+
+    // Show formal message
+    if (formalMessageEl) {
+        formalMessageEl.style.display = 'block';
+        formalTextEl.innerHTML = `<strong>Admin Update:</strong> ${status.message}`;
+    }
+
+    // Still show next scheduled activity
+    const now = dayjs();
+    const currentDay = now.day();
+
+    let nextActivity = schedule.find(item => {
+        if (item.day !== currentDay) return false;
+        const start = dayjs(`${now.format('YYYY-MM-DD')} ${item.start}`);
+        return start.isAfter(now);
+    });
+
+    if (!nextActivity) {
+        for (let i = 1; i <= 7; i++) {
+            let nextDay = (currentDay + i) % 7;
+            let found = schedule.filter(item => item.day === nextDay).sort((a, b) => a.start.localeCompare(b.start))[0];
+            if (found) {
+                nextActivity = found;
+                nextActivity.isFutureDay = true;
+                nextActivity.dayName = dayjs().day(nextDay).format('dddd');
+                break;
+            }
+        }
+    }
+
+    if (nextActivity) {
+        let timeDisplay = dayjs(nextActivity.start, 'HH:mm').format('h:mm A');
+        if (nextActivity.isFutureDay) {
+            timeDisplay = `${nextActivity.dayName}, ${timeDisplay}`;
+        }
+
+        nextItemEl.innerHTML = `
+            <span class="next-time">${timeDisplay}</span>
+            <span class="next-activity">${nextActivity.title} <small>(${nextActivity.room})</small></span>
+        `;
+    } else {
+        nextItemEl.innerHTML = `<span>No upcoming classes found.</span>`;
+    }
 }
 
 function checkSchedule(now) {
@@ -330,4 +404,14 @@ if (canvas) {
 
 // Initial call and interval
 updateTime();
-setInterval(updateTime, 1000 * 60); // Update every minute
+setInterval(updateTime, 1000); // Update every second for real-time admin status
+
+// Listen for storage changes from admin panel (real-time sync across tabs)
+window.addEventListener('storage', (e) => {
+    // Only update if adminStatus changed
+    if (e.key === 'adminStatus') {
+        console.log('Admin status changed by admin panel, updating display...');
+        updateTime();
+    }
+});
+
