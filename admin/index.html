@@ -43,7 +43,7 @@
         <header class="admin-header">
             <div>
                 <h1>⚡ Admin Control Panel</h1>
-                <p class="admin-subtitle">Manage your schedule status</p>
+                <p class="admin-subtitle">Manage your schedule and status</p>
             </div>
             <button class="btn-logout" id="logout-btn">Logout</button>
         </header>
@@ -121,6 +121,43 @@
             </div>
         </div>
 
+        <!-- Schedule Manager -->
+        <div class="card schedule-manager">
+            <div class="card-header">
+                <h2>📅 Schedule Manager</h2>
+                <div class="schedule-actions">
+                    <button class="btn-secondary btn-small" id="export-schedule-btn">📥 Export</button>
+                    <button class="btn-secondary btn-small" id="import-schedule-btn">📤 Import</button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                </div>
+            </div>
+            <p class="card-description">Click any cell to add, edit, or delete schedule entries</p>
+
+            <div class="schedule-grid-container">
+                <table class="admin-schedule-grid" id="admin-schedule-grid">
+                    <thead>
+                        <tr>
+                            <th>DAY</th>
+                            <th>8:30AM-9:50AM</th>
+                            <th>9:51AM-11:10AM</th>
+                            <th>11:11AM-12:30PM</th>
+                            <th>12:31PM-1:50PM</th>
+                            <th>1:51PM-3:10PM</th>
+                            <th>3:11PM-4:30PM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-grid-body">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bulk-actions">
+                <button class="btn-secondary" id="reset-schedule-btn">🔄 Reset to Default</button>
+                <button class="btn-secondary" id="clear-all-schedule-btn">🗑️ Clear All Schedule</button>
+            </div>
+        </div>
+
         <!-- Quick Links -->
         <div class="card quick-links">
             <h2>🔗 Quick Links</h2>
@@ -136,12 +173,59 @@
         <div class="card help-section">
             <h3>💡 How to Use</h3>
             <ul>
-                <li><strong>Toggle ON:</strong> Enable status override to display your custom message</li>
-                <li><strong>Custom Message:</strong> Write any message you want to show on your public schedule</li>
-                <li><strong>Presets:</strong> Click any preset button to quickly fill in common messages</li>
-                <li><strong>Save:</strong> Click "Save & Activate" to publish your message</li>
-                <li><strong>Clear:</strong> Remove the custom message and return to normal schedule</li>
+                <li><strong>Status Override:</strong> Enable to display a custom message on your public schedule</li>
+                <li><strong>Schedule Manager:</strong> Click any cell in the schedule grid to add, edit, or delete
+                    entries</li>
+                <li><strong>Add Entry:</strong> Click an empty cell and fill in the activity details</li>
+                <li><strong>Edit Entry:</strong> Click a filled cell to modify or delete the entry</li>
+                <li><strong>Export/Import:</strong> Backup your schedule or restore from a previous backup</li>
+                <li><strong>Reset:</strong> Restore the default schedule or clear all entries</li>
             </ul>
+        </div>
+
+        <!-- Edit Schedule Modal -->
+        <div class="modal" id="edit-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Edit Schedule Entry</h3>
+                    <button class="modal-close" id="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="schedule-form">
+                        <div class="form-group">
+                            <label for="entry-type">Activity Type:</label>
+                            <select id="entry-type" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="class">Class</option>
+                                <option value="cnh">Counseling Hour</option>
+                                <option value="oh">Office Hour</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="entry-title">Title/Course:</label>
+                            <input type="text" id="entry-title" placeholder="e.g., CSE 1112 (M)" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="entry-room">Room Number:</label>
+                            <input type="text" id="entry-room" placeholder="e.g., 423" required>
+                        </div>
+
+                        <div class="form-info">
+                            <p><strong>Day:</strong> <span id="entry-day-display"></span></p>
+                            <p><strong>Time:</strong> <span id="entry-time-display"></span></p>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-primary">💾 Save Entry</button>
+                            <button type="button" class="btn-secondary" id="delete-entry-btn" style="display: none;">🗑️
+                                Delete Entry</button>
+                            <button type="button" class="btn-secondary" id="modal-cancel">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <footer class="admin-footer">
