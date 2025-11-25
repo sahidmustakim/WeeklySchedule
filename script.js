@@ -433,9 +433,75 @@ if (canvas) {
     });
 }
 
-// Initial call and interval
-updateTime();
-setInterval(updateTime, 1000); // Update every second for real-time admin status
+// --- DYNAMIC SCHEDULE TABLE RENDERING ---
+
+// Schedule configuration (same as admin panel)
+const DAYS_ORDER = ['SAT', 'SUN', 'MON', 'TUE', 'WED'];
+const DAY_NUMBERS = { 'SAT': 6, 'SUN': 0, 'MON': 1, 'TUE': 2, 'WED': 3 };
+const TIME_SLOTS = [
+    { start: '08:30', end: '09:50' },
+    { start: '09:51', end: '11:10' },
+    { start: '11:11', end: '12:30' },
+    { start: '12:31', end: '13:50' },
+    { start: '13:51', end: '15:10' },
+    { start: '15:11', end: '16:30' }
+];
+
+// Render the weekly schedule table dynamically
+function renderWeeklySchedule() {
+    const scheduleGridBody = document.getElementById('schedule-grid-body');
+    if (!scheduleGridBody) return; // Exit if element doesn't exist
+
+    scheduleGridBody.innerHTML = ''; // Clear existing content
+
+    DAYS_ORDER.forEach(day => {
+        const row = document.createElement('tr');
+
+        // Day column
+        const dayCell = document.createElement('td');
+        dayCell.className = 'day-col';
+        dayCell.textContent = day;
+        row.appendChild(dayCell);
+
+        // Time slot columns
+        const dayNum = DAY_NUMBERS[day];
+        TIME_SLOTS.forEach(slot => {
+            const cell = document.createElement('td');
+
+            // Find entry for this day/time from the loaded schedule
+            const entry = schedule.find(e =>
+                e.day === dayNum && e.start === slot.start && e.end === slot.end
+            );
+
+            if (entry) {
+                // For counseling/office hours, use abbreviated text
+                if (entry.type === 'cnh') {
+                    cell.textContent = 'CnH';
+                    cell.className = 'cnh';
+                } else if (entry.type === 'oh') {
+                    cell.textContent = 'OH';
+                    cell.className = 'oh';
+                } else {
+                    // For classes, show the title
+                    cell.textContent = entry.title;
+                }
+            }
+
+            row.appendChild(cell);
+        });
+
+        scheduleGridBody.appendChild(row);
+    });
+
+    console.log('📅 Weekly schedule table rendered');
+}
+
+// Initial rendering when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    renderWeeklySchedule(); // Render schedule table on page load  
+    setInterval(updateTime, 1000); // Update every second for real-time admin status
+});
 
 // Listen for storage changes from admin panel (real-time sync across tabs)
 window.addEventListener('storage', (e) => {
@@ -450,6 +516,7 @@ window.addEventListener('storage', (e) => {
         console.log('📅 Schedule updated by admin panel, reloading...');
         schedule = loadSchedule();
         updateTime(); // Refresh display with new schedule
+        renderWeeklySchedule(); // Re-render the schedule table
     }
 });
 

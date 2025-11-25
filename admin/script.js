@@ -654,3 +654,22 @@ loginHint.textContent = 'Enter your password to continue.';
 
 // Start on login screen
 showLoginScreen();
+
+// ================================
+// Real-Time Synchronization
+// ================================
+
+// Listen for storage changes from other tabs/windows (real-time sync)
+window.addEventListener('storage', (e) => {
+    // Admin status changed in another tab
+    if (e.key === 'adminStatus') {
+        console.log('🔄 Admin status changed in another tab, updating UI...');
+        loadAdminStatus();
+    }
+
+    // Schedule data changed in another tab
+    if (e.key === 'scheduleData') {
+        console.log('📅 Schedule updated in another tab, reloading grid...');
+        renderScheduleGrid();
+    }
+});
